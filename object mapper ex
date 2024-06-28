@@ -1,0 +1,106 @@
+Why Convert JSON to Java POJO?
+Data Interchange: JSON is commonly used for data interchange between systems, especially in web applications. Converting JSON to Java POJOs allows the data to be easily manipulated within Java applications.
+Type Safety: Java POJOs provide type safety, meaning that the data can be checked at compile time for type errors, reducing runtime errors.
+Ease of Use: Working with POJOs is more intuitive and manageable in Java code than dealing with raw JSON strings or maps.
+Maintainability: POJOs make the code more readable and maintainable by providing a clear structure and representation of the data.
+
+How to Convert JSON to Java POJO using Jackson
+
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.13.3</version>
+</dependency>
+
+2. Create Java POJO: Define the Java class that matches the structure of your JSON.
+
+public class Person {
+    private String name;
+    private int age;
+
+    // Getters and setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+3. Convert JSON to POJO: Use Jackson’s ObjectMapper to convert JSON to Java object.
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class Main {
+    public static void main(String[] args) {
+        String json = "{\"name\":\"John\", \"age\":30}";
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Person person = objectMapper.readValue(json, Person.class);
+
+            System.out.println("Name: " + person.getName());
+            System.out.println("Age: " + person.getAge());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Person {
+    @JsonProperty("name")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String name;
+
+    @JsonProperty("age")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private int age;
+
+    // Getters and setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        String json = "{\"name\":\"John\", \"age\":30, \"unknownField\":\"value\"}";
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Person person = objectMapper.readValue(json, Person.class);
+
+            System.out.println("Name: " + person.getName());
+            System.out.println("Age: " + person.getAge());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
