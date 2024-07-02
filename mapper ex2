@@ -1,0 +1,114 @@
+Step 1: Add Dependencies
+<dependencies>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.13.3</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>2.13.3</version>
+    </dependency>
+</dependencies>
+
+
+Step 2: Create Java Classes for XML Structure
+<company>
+    <name>Tech Solutions</name>
+    <employees>
+        <employee>
+            <name>John Doe</name>
+            <age>30</age>
+            <department>Engineering</department>
+        </employee>
+        <employee>
+            <name>Jane Smith</name>
+            <age>25</age>
+            <department>Marketing</department>
+        </employee>
+    </employees>
+</company>
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+
+import java.util.List;
+
+public class Employee {
+    @JacksonXmlProperty(localName = "name")
+    private String name;
+
+    @JacksonXmlProperty(localName = "age")
+    private int age;
+
+    @JacksonXmlProperty(localName = "department")
+    private String department;
+
+    // Getters and setters
+}
+
+public class Company {
+    @JacksonXmlProperty(localName = "name")
+    private String name;
+
+    @JacksonXmlElementWrapper(localName = "employees")
+    @JacksonXmlProperty(localName = "employee")
+    private List<Employee> employees;
+
+    // Getters and setters
+}
+===
+Step 3: Parse XML to Java Objects
+Use Jackson XML to parse the XML data into Java objects:
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+
+public class XmlToJson {
+    public static void main(String[] args) {
+        XmlMapper xmlMapper = new XmlMapper();
+        try {
+            // Read XML file and map to Java object
+            Company company = xmlMapper.readValue(new File("company.xml"), Company.class);
+
+            // Convert Java object to byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            xmlMapper.writeValue(byteArrayOutputStream, company);
+            byte[] xmlBytes = byteArrayOutputStream.toByteArray();
+
+            // Convert byte array back to Java object
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(xmlBytes);
+            Company deserializedCompany = xmlMapper.readValue(byteArrayInputStream, Company.class);
+
+            // Convert Java object to JSON
+            ObjectMapper jsonMapper = new ObjectMapper();
+            String json = jsonMapper.writeValueAsString(deserializedCompany);
+
+            // Print JSON
+            System.out.println(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Example Output
+Given the example XML input, the output JSON would look like this:
+{
+  "name": "Tech Solutions",
+  "employees": [
+    {
+      "name": "John Doe",
+      "age": 30,
+      "department": "Engineering"
+    },
+    {
+      "name": "Jane Smith",
+      "age": 25,
+      "department": "Marketing"
+    }
+  ]
+}
